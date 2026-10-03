@@ -4,6 +4,7 @@
 \usepackage{booktabs}
 \usepackage{hyperref}
 \usepackage{microtype}
+\usepackage{float}
 
 \title{\textbf{An Ethical AI Framework for Low-Resource Urdu Text Classification: Pipeline Design and Baseline Evaluation}}
 \author{\textbf{Zainab Yasser}}
@@ -25,7 +26,7 @@ When deploying automated text classification tools in sensitive contexts, model 
 \section{Dataset Specifications}
 The corpus comprises 5,000 manually verified Urdu textual records. To resolve environment-dependent Byte Order Mark (BOM) anomalies and character corruption (mojibake), the pipeline enforces strict UTF-8-sig encoding during data ingestion.
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \caption{Dataset Structural Profile}
 \label{tab:dataset_summary}
@@ -73,7 +74,7 @@ The pipeline explicitly integrates three ethical principles:
 \section{Experimental Results}
 The stratified test evaluation ($N=1,000$) yielded an overall classification accuracy of \textbf{72.00\%}. Performance metrics demonstrate a balanced tradeoff between precision and recall across classes.
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \caption{Performance Evaluation Matrix}
 \label{tab:results}
