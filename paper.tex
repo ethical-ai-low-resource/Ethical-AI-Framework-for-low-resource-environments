@@ -89,7 +89,34 @@ Weighted Average & \textbf{0.74} & \textbf{0.72} & \textbf{0.71} & \textbf{72.00
 \end{table}
 
 The resulting serialized artifacts (\texttt{urdu\_model.pkl} and \texttt{vectorizer.pkl}) provide consistent inference behaviors for downstream web service integrations.
+% Section: Streamlit Deployment Overview
+% Simple Logic: Yeh main section Streamlit web app ke deployment ki information batata hai.
+\section{Interactive Web Application and Deployment}
+To test the practical usability of our Urdu text classification model, we built a web application using Streamlit. This interface allows users to enter Urdu text and receive instant classification results.
 
+% Subsection: App Architecture & UI Design
+% Simple Logic: Is hissay mein bataya gaya hai ke saved models kaise load hotay hain aur RTL (Right-to-Left) Urdu support kaise di gayi hai.
+\subsection{Architecture and User Interface}
+When the application starts, it automatically loads the saved TF-IDF vectorizer and the trained logistic regression model. The user interface was customized to support Right-to-Left text direction, ensuring proper display and alignment for Urdu script.
+
+% List: Key Features of Web App
+% Simple Logic: App ke teen main functions - Real-time prediction, confidence score show karna, aur errors se bachna.
+The main functional components of the web application include:
+\begin{itemize}
+    % Sub-item 1: Input text ko tokenize aur convert karke instant prediction dena.
+    \item \textbf{Real-Time Inference:} Processes user input through tokenization and feature transformation to generate live predictions.
+    
+    % Sub-item 2: Prediction ke saath model ka confidence percentage display karna.
+    \item \textbf{Confidence Estimation:} Displays the predicted class label along with the probability score calculated by the model.
+    
+    % Sub-item 3: Khali input ya missing file par app crash hone se rokna.
+    \item \textbf{Error Handling:} Includes simple validation logic to prevent server crashes caused by empty text inputs or missing model files.
+\end{itemize
+
+% Subsection: System Testing & Integration
+% Simple Logic: Local server (Port 8501) par hosting aur test inputs ke saath testing ki details.
+\subsection{System Integration and Verification}
+The application was hosted locally on TCP port 8501 for testing purposes. We verified the deployment by feeding several Urdu sentences into the interface, confirming that preprocessing, model inference, and text rendering work as expected.
 \section{Conclusion and Future Scope}
 This paper presented a lightweight, ethically conscious classification framework for Urdu text processing. Achieving 72\% baseline accuracy with complete feature transparency establishes a benchmark for future iterations. Future research will explore fine-tuning transformer-based models (such as mBERT or XLM-RoBERTa) while auditing the associated trade-offs between predictive accuracy and model explainability.
 
