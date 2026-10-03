@@ -1,3 +1,4 @@
+import os
 import pickle
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -5,50 +6,59 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.model_selection import train_test_split
 
-# 1. Load and prepare raw data
-data_path = "urdu_5k_dataset.csv"
-data = pd.read_csv(data_path, encoding='utf-8-sig')
+def train_pipeline(data_path="urdu_5k_dataset.csv"):
+    if not os.path.exists(data_path):
+        raise FileNotFoundError(f"Error: {data_path} file nahi mili! File name check karein.")
 
-# Handle text columns cleanly
-texts = data.iloc[:, 0].fillna("").astype(str)
-labels = data.iloc[:, 1]
+    # 1. Load Data cleanly with UTF-8 support
+    print(f"[INFO] Loading dataset from: {data_path}")
+    data = pd.read_csv(data_path, encoding='utf-8-sig')
 
-# Quick sanity check on target distribution
-print("Class Distribution:")
-print(labels.value_counts())
-print("-" * 40)
+    # Ensure non-empty dataframe
+    if data.shape[1] < 2:
+        raise ValueError("Error: Dataset mein kam az kam 2 columns (Text, Label) hone chahiye.")
 
-# 2. Train / Test Split
-X_train, X_test, y_train, y_test = train_test_split(
-    texts, 
-    labels, 
-    test_size=0.20, 
-    random_state=42, 
-    stratify=labels
-)
+    # 2. Extract Text and Label columns safely
+    X_raw = data.iloc[:, 0].fillna("").astype(str)
+    y_raw = data.iloc[:, 1].astype(str)
 
-# 3. Text Feature Extraction (TF-IDF)
-tfidf = TfidfVectorizer(max_features=5000, sublinear_tf=True)
-X_train_vec = tfidf.fit_transform(X_train)
-X_test_vec = tfidf.transform(X_test)
+    print("\n--- Target Class Distribution ---")
+    print(y_raw.value_counts())
+    print("-" * 35)
 
-# 4. Model Setup & Fitting
-clf = LogisticRegression(max_iter=1000)
-clf.fit(X_train_vec, y_train)
+    # 3. Train-Test Split (80% Train, 20% Test)
+    X_train, X_test, y_train, y_test = train_test_split(
+        X_raw, y_raw, test_size=0.2, random_state=42, stratify=y_raw
+    )
 
-# 5. Model Evaluation
-predictions = clf.predict(X_test_vec)
-score = accuracy_score(y_test, predictions)
+    # 4. Feature Extraction (TF-IDF Vectorizer)
+    # max_features set karne se web deployment mein speed tez ho jati hai
+    vectorizer = TfidfVectorizer(max_features=5000, ngram_range=(1, 2))
+    X_train_vec = vectorizer.fit_transform(X_train)
+    X_test_vec = vectorizer.transform(X_test)
 
-print(f"Validation Accuracy: {score:.4f}\n")
-print("Classification Breakdown:")
-print(classification_report(y_test, predictions))
+    # 5. Model Training (Logistic Regression)
+    model = LogisticRegression(max_iter=1000, random_state=42)
+    model.fit(X_train_vec, y_train)
 
-# 6. Save Artifacts for Inference
-with open("urdu_model.pkl", "wb") as model_file:
-    pickle.dump(clf, model_file)
+    # 6. Evaluation for Research Paper Reporting
+    y_pred = model.predict(X_test_vec)
+    acc = accuracy_score(y_test, y_pred)
+    
+    print("\n--- Model Performance Metrics ---")
+    print(f"Accuracy: {acc * 100:.2f}%")
+    print("\nDetailed Classification Report:")
+    print(classification_report(y_test, y_pred))
+    print("-" * 35)
 
-with open("vectorizer.pkl", "wb") as vec_file:
-    pickle.dump(tfidf, vec_file)
+    # 7. Save Model Artifacts for Web App Deployment
+    with open("urdu_model.pkl", "wb") as f_model:
+        pickle.dump(model, f_model)
 
-print("Pipeline artifacts successfully saved.")
+    with open("vectorizer.pkl", "wb") as f_vec:
+        pickle.dump(vectorizer, f_vec)
+
+    print("\n[SUCCESS] 'urdu_model.pkl' aur 'vectorizer.pkl' successfully save ho gaye hain!")
+
+if __name__ == "__main__":
+    train_pipeline()
