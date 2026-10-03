@@ -6,8 +6,8 @@ from sklearn.metrics import accuracy_score, classification_report
 from sklearn.model_selection import train_test_split
 
 # 1. Load and prepare raw data
-data_path = "urdu_5k_dataset.xlsx"
-data = pd.read_excel(data_path)
+data_path = "urdu_5k_dataset.csv"
+data = pd.read_csv(data_path, encoding='utf-8-sig')
 
 # Handle text columns cleanly
 texts = data.iloc[:, 0].fillna("").astype(str)
